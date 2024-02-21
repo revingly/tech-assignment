@@ -10,7 +10,7 @@ class Movie extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'details', 'img', 'year'];
+    protected $fillable = ['original_title', 'overview', 'genre', 'type', 'release_date', 'poster_img'];
 
     /**
      * @return BelongsToMany
