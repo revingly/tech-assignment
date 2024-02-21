@@ -19,7 +19,18 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('movie', [MovieController::class, 'index'])->name('movie.index');
+Route::middleware('auth:api')->group(function () {
+    // These routes will call the MovieApiService to get the movie data
+    Route::get('movies/search', [MovieController::class, 'searchByName'])->name('movies.searchByName');
+    Route::get('movies/popular', [MovieController::class, 'popular'])->name('movies.popular');
+    Route::get('movies/trending', [MovieController::class, 'trending'])->name('movies.trending');
+
+    // These routes will call the database to get the data
+    Route::get('movies/{movie}', [MovieController::class, 'show'])->name('movies.show');
+    Route::post('movies', [MovieController::class, 'store'])->name('movies.favorite.add');
+    Route::delete('movies/{movie}', [MovieController::class, 'remove'])->name('movies.favorite.remove');
+
+});
 
 Route::group([
 
