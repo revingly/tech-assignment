@@ -3,6 +3,9 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -23,8 +26,17 @@ class Handler extends ExceptionHandler
      */
     public function register(): void
     {
-        $this->reportable(function (Throwable $e) {
-            //
+        // Override the default behavior for not found exceptions to return a 404 json response.
+        $this->renderable(function (NotFoundHttpException $e, Request $request) {
+            Log::error($e->getMessage());
+            Log::error($e->getTraceAsString());
+            $message = "Not found.";
+            if (config('app.debug')) $message = $e->getMessage();
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'message' => $message
+                ], 404);
+            }
         });
     }
 }
