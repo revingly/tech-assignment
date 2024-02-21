@@ -4,75 +4,130 @@ namespace App\Http\Controllers;
 
 use App\Models\Movie;
 use App\Http\Requests\StoreMovieRequest;
-use App\Http\Requests\UpdateMovieRequest;
+use App\Repositories\MovieRepository;
 use App\Services\MovieApiService;
-use GuzzleHttp\Exception\GuzzleException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpFoundation\Response;
 
 class MovieController extends Controller
 {
+    private MovieRepository $movieRepository;
     private MovieApiService $movieApiService;
 
-    public function __construct(MovieApiService $movieApiService)
+    public function __construct(MovieRepository $movieRepository, MovieApiService $movieApiService)
     {
+        $this->movieRepository = $movieRepository;
         $this->movieApiService = $movieApiService;
     }
 
     /**
-     * Display a listing of the resource.
-     * @throws GuzzleException
+     * @param Request $request
+     * @return JsonResponse
      */
-    public function index(Request $request)
+    public function searchByName(Request $request): JsonResponse
     {
-        $res = $this->movieApiService->findBy($request->query('name'));
-        return $res->getBody();
+        try {
+            $res = $this->movieApiService->findBy($request->query('name'));
+
+            return response()->json($res, Response::HTTP_OK);
+        } catch (\Throwable $exception) {
+            Log::error($exception->getMessage());
+            Log::error($exception->getTraceAsString());
+
+            return response()->json(["error" => "Api error"], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    /**
+     * @param StoreMovieRequest $request
+     * @return JsonResponse
+     */
+    public function store(StoreMovieRequest $request): JsonResponse
+    {
+        try {
+            DB::beginTransaction();
+
+            $movie = $this->movieRepository->create($request->validated());
+
+            $request->user()->favorites()->attach($movie);
+
+            DB::commit();
+
+            return response()->json($movie, Response::HTTP_CREATED);
+        } catch (\Throwable $exception) {
+            DB::rollBack();
+            Log::error($exception->getMessage());
+            Log::error($exception->getTraceAsString());
+
+            return response()->json(["error" => "Api error"], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
-     * Show the form for creating a new resource.
+     * @param Request $request
+     * @param Movie $movie
+     * @return JsonResponse
      */
-    public function create()
+    public function remove(Request $request, Movie $movie): JsonResponse
     {
-        //
-    }
+        try {
+            DB::beginTransaction();
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreMovieRequest $request)
-    {
-        //
+            $request->user()->favorites()->detach($movie);
+
+            DB::commit();
+
+            return response()->json(["message" => "removed"], Response::HTTP_OK);
+        } catch (\Throwable $exception) {
+            DB::rollBack();
+            Log::error($exception->getMessage());
+            Log::error($exception->getTraceAsString());
+
+            return response()->json(["error" => "Api error"], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Movie $movie)
+    public function show(Movie $movie): JsonResponse
     {
-        //
+        return response()->json($movie, Response::HTTP_OK);
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * @return JsonResponse
      */
-    public function edit(Movie $movie)
+    public function popular(): JsonResponse
     {
-        //
+        try {
+            $res = $this->movieApiService->popular();
+            return response()->json($res, Response::HTTP_OK);
+        } catch (\Throwable $exception) {
+            Log::error($exception->getMessage());
+            Log::error($exception->getTraceAsString());
+
+            return response()->json(["error" => "Api error"], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
-     * Update the specified resource in storage.
+     * @return JsonResponse
      */
-    public function update(UpdateMovieRequest $request, Movie $movie)
+    public function trending(): JsonResponse
     {
-        //
-    }
+        try {
+            $res = $this->movieApiService->trending();
+            return response()->json($res, Response::HTTP_OK);
+        } catch (\Throwable $exception) {
+            Log::error($exception->getMessage());
+            Log::error($exception->getTraceAsString());
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Movie $movie)
-    {
-        //
+            return response()->json(["error" => "Api error"], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 }
