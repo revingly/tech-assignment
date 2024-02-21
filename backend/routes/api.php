@@ -33,24 +33,19 @@ Route::middleware('auth:api')->group(function () {
 });
 
 Route::group([
-
     'middleware' => 'api',
     'prefix' => 'auth'
-
 ], function ($router) {
-    Route::post('register', [AuthController::class, 'register'])->name('register');
-    Route::post('login', [AuthController::class, 'login'])->name('login');
-    Route::post('logout', [AuthController::class, 'logout'])->name('logout');
-    Route::post('refresh', [AuthController::class, 'refresh'])->name('refresh');
-    Route::post('me', [AuthController::class, 'me'])->name('me');
-
+    Route::post('register', [AuthController::class, 'register'])->name('auth.register');
+    Route::post('login', [AuthController::class, 'login'])->name('auth.login');
+    Route::post('logout', [AuthController::class, 'logout'])->name('auth.logout');
+    Route::post('refresh', [AuthController::class, 'refresh'])->name('auth.refresh');
+    Route::get('me', [AuthController::class, 'me'])->name('auth.me');
 });
 
-Route::post('/forgot-password', SendPasswordResetLinkController::class)
-    ->name('password.email');
+Route::post('/forgot-password', SendPasswordResetLinkController::class)->name('password.email');
 
-Route::post('/reset-password', ResetPasswordController::class)
-    ->name('password.update');
+Route::post('/reset-password', ResetPasswordController::class)->name('password.update');
 
 Route::middleware('auth:api')->group(function () {
     Route::post('/email/verification-notification', SendEmailVerificationNotificationController::class)
