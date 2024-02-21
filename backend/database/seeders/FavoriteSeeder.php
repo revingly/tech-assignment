@@ -21,7 +21,7 @@ class FavoriteSeeder extends Seeder
         // Randomly favorite movies for each user
         foreach ($userIds as $userId) {
             // Randomly select a few movies to favorite
-            $favoriteMovieIds = array_rand(array_flip($movieIds), rand(5, 10));
+            $favoriteMovieIds = array_rand(array_flip($movieIds), rand(1, 3));
 
             // Attach the favorite movies to the user
             User::find($userId)->favorites()->attach($favoriteMovieIds);
