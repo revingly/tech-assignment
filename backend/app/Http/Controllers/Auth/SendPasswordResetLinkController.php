@@ -11,6 +11,9 @@ use Illuminate\Validation\ValidationException;
 
 class SendPasswordResetLinkController extends Controller
 {
+    /**
+     * @throws ValidationException
+     */
     public function __invoke(SendPasswordResetLinkRequest $request): JsonResponse
     {
         $status = Password::sendResetLink(
