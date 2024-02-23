@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')->group(function () {
     // These routes will call the MovieApiService to get the movie data
     Route::get('movies/search', [MovieController::class, 'searchByName'])->name('movies.searchByName');
+    Route::get('movies/details/{id}', [MovieController::class, 'details'])->name('movies.details');
     Route::get('movies/popular', [MovieController::class, 'popular'])->name('movies.popular');
     Route::get('movies/trending', [MovieController::class, 'trending'])->name('movies.trending');
 
