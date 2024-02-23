@@ -41,6 +41,19 @@ class MovieController extends Controller
         }
     }
 
+    public function details(int $movieId): JsonResponse
+    {
+        try {
+            $res = $this->movieApiService->details($movieId);
+
+            return response()->json($res, Response::HTTP_OK);
+        } catch (\Throwable $exception) {
+            Log::error($exception->getMessage());
+            Log::error($exception->getTraceAsString());
+
+            return response()->json(["error" => "Api error"], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 
     /**
      * @param StoreMovieRequest $request
