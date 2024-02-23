@@ -1,8 +1,9 @@
 import axios from "axios";
 import { getItem } from "@/Utils/Storage";
+import { BACKEND_API_URL } from "@/Utils/constants.tsx";
 
 const api = axios.create({
-    baseURL: 'http://localhost:8000/api',
+    baseURL: BACKEND_API_URL,
 
 });
 
