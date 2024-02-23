@@ -50,10 +50,10 @@ export const Movies: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   useEffect(() => {
-    fetchMovies();
+    fetchMovies().then();
   }, []);
 
   return (

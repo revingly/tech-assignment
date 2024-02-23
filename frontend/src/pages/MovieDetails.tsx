@@ -32,7 +32,7 @@ export const MovieDetails: React.FC = () => {
       setLoading(false);
     };
 
-    fetchMovieDetails();
+    fetchMovieDetails().then();
   }, []);
 
   return (
