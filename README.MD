@@ -8,7 +8,7 @@
 Notes:
 - Added the database to save the movies details when user save a movie in the favorites list to reduce 
 the amount of http request being sent to the external API. The frontend is not using this feature yet.
-- Please make sure to get an API key from https://developer.themoviedb.org/docs/getting-startedthe and update
+- Please make sure to get an API key from https://developer.themoviedb.org/docs/getting-started and update
 the following env variables
 ```
 MOVIE_API_ENDPOINT=https://api.themoviedb.org/3/
