@@ -51,4 +51,11 @@ class MovieApiService
         $response->throwUnlessStatus(200);
         return $response->json();
     }
+
+    public function details(int $movieId): array
+    {
+        $response = Http::movie()->get(sprintf("movie/%s?api_key=%s", $movieId, $this->apiKey));
+        $response->throwUnlessStatus(200);
+        return $response->json();
+    }
 }
